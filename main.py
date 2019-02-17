@@ -17,14 +17,12 @@ import sys
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
-from linebot import (
-    LineBotApi, WebhookHandler
-)
-from linebot.exceptions import (
-    InvalidSignatureError
-)
+from linebot import (LineBotApi, WebhookHandler)
+from linebot.exceptions import (InvalidSignatureError)
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent,
+    TextMessage,
+    TextSendMessage,
 )
 
 app = Flask(__name__)
@@ -52,6 +50,8 @@ def callback():
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
+    print(body)
+
     # handle webhook body
     try:
         handler.handle(body, signature)
@@ -63,12 +63,11 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
-    print("ReplyToken:"+event.reply_token)
+    print(event)
+    print("ReplyToken:" + event.reply_token)
     try:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text)
-        )
+        line_bot_api.reply_message(event.reply_token,
+                                   TextSendMessage(text=event.message.text))
     except Exception as e:
         print(e)
 
