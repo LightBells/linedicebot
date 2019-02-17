@@ -63,6 +63,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
+    if event.type != "message":
+        return
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text)
