@@ -16,14 +16,11 @@ import os
 import sys
 from argparse import ArgumentParser
 
-from flask import Flask, request, abort
-from linebot import (LineBotApi, WebhookHandler)
-from linebot.exceptions import (InvalidSignatureError)
-from linebot.models import (
-    MessageEvent,
-    TextMessage,
-    TextSendMessage,
-)
+import psycopg2
+from flask import Flask, abort, request
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 app = Flask(__name__)
 
@@ -36,6 +33,9 @@ if channel_secret is None:
 if channel_access_token is None:
     print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
     sys.exit(1)
+
+connection = psycopg2.connect(os.getenv('DATABASE_URL', None))
+db_cursor = connection.cursor()
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
@@ -63,11 +63,14 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
-    print(event)
-    print("ReplyToken:" + event.reply_token)
     try:
-        line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text=event.message.text))
+        db_cursor.excute("SELECT version()")
+        strings = ""
+        for row in db_cursor:
+            strings += row
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=strings + event.message.text))
     except Exception as e:
         print(e)
 
