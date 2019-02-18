@@ -64,7 +64,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
     try:
-        db_cursor.excute("SELECT version()")
+        db_cursor.execute("SELECT version()")
         strings = ""
         for row in db_cursor:
             strings += row
