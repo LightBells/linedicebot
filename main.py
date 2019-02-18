@@ -41,9 +41,11 @@ db_cursor = connection.cursor()
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
-@app.route("/status", medthods=['GET'])
+
+@app.route("/status", methods=['GET'])
 def status():
     return 'OK'
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
