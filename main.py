@@ -35,11 +35,15 @@ if channel_access_token is None:
     sys.exit(1)
 
 connection = psycopg2.connect(os.getenv('DATABASE_URL', None))
+connection.autocommit = True
 db_cursor = connection.cursor()
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
+@app.route("/status", medthods=['GET'])
+def status():
+    return 'OK'
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -48,7 +52,6 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
 
     print(body)
 
