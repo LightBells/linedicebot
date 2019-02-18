@@ -67,7 +67,7 @@ def message_text(event):
         db_cursor.execute("SELECT version()")
         strings = ""
         for row in db_cursor:
-            strings += row
+            strings += row[0]
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=strings + event.message.text))
